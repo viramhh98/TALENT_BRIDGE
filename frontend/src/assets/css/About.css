@@ -1,0 +1,12 @@
+/* About.css */
+
+h2 {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.about-content {
+  max-width: 800px; /* Centered text area */
+  margin: auto;
+  line-height: 1.5;
+}

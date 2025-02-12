@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Map</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.css"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css"
+    />
+
+    <style>
+      #map {
+        width: 100%;
+        height: 100vh;
+      }
+
+      .leaflet-routing-instructions-container {
+        display: none !important;
+      }
+    </style>
+
+    <script src="https://unpkg.com/@barba/core"></script>
+  </head>
+  <body data-barba="wrapper">
+    <div data-scroll-container class="container">
+      <main data-barba="container" data-barba-namespace="search">
+        <div id="map"></div>
+      </main>
+    </div>
+
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
+    <script>
+      var my_lat;
+      var my_lng;
+      var map = L.map("map");
+      var address = "Sector 28, Gandhinagar, Gujarat, India";
+      let dest_latitude, dest_longitude, feature;
+
+      fetch(
+        `https://api.geoapify.com/v1/geocode/search?text=${address}&apiKey=893952c1d0e04fbeafb571f2d2e09fb3`,
+        requestOptions
+      )
+        .then((response) => response.json())
+        .then((result) => {
+          // Assuming you want the first feature
+          feature = result.features[0];
+
+          // Accessing the coordinates from the geometry object
+          dest_longitude = feature.geometry.coordinates[0];
+          dest_latitude = feature.geometry.coordinates[1];
+
+          console.log("Longitude:", longitude);
+          console.log("Latitude:", latitude);
+        })
+        .catch((error) => console.log("error", error));
+
+      map.setView([51.505, -0.09], 13);
+
+      // L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      //     maxZoom: 19,
+      //     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      // }).addTo(map);
+
+      // var Stadia_AlidadeSmoothDark = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.{ext}', {
+      //     minZoom: 0,
+      //     maxZoom: 20,
+      //     attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      //     ext: 'png'
+      // });
+
+      // Stadia_AlidadeSmoothDark.addTo(map);
+
+      var Esri_WorldImagery = L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        {
+          attribution:
+            "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community",
+        }
+      );
+
+      Esri_WorldImagery.addTo(map);
+
+      if (!navigator.geolocation) {
+        console.log("Your browser doesn't support geolocation feature!");
+      } else {
+        setInterval(() => {
+          navigator.geolocation.watchPosition(success, error);
+        }, 10000);
+      }
+
+      navigator.geolocation.watchPosition(success, error);
+
+      let marker;
+      let routingControl;
+      let circle;
+
+      function success(pos) {
+        var lat = pos.coords.latitude;
+        var lng = pos.coords.longitude;
+        my_lat = pos.coords.latitude;
+        my_lng = pos.coords.longitude;
+        var accuracy = pos.coords.accuracy;
+
+        if (marker) {
+          map.removeLayer(marker);
+        }
+
+        if (circle) {
+          map.removeLayer(circle);
+        }
+
+        marker = L.marker([lat, lng]);
+        circle = L.circle([lat, lng], { radius: accuracy });
+
+        var featureGroup = L.featureGroup([marker, circle]).addTo(map);
+
+        map.fitBounds(featureGroup.getBounds());
+
+        console.log(
+          "Your coordinate is: Lat: " +
+            lat +
+            " Long: " +
+            lng +
+            " Accuracy: " +
+            accuracy
+        );
+
+        // Remove existing routing control if it exists
+        if (routingControl) {
+          map.removeControl(routingControl);
+        }
+
+        // var newMarker = L.marker([my_lat, my_lng]).addTo(map);
+        // // Add new routing control
+        // routingControl = L.Routing.control({
+        //     waypoints: [
+        //         L.latLng(my_lat, my_lng),
+        //         L.latLng(dest_latitude, dest_longitude)
+        //     ]
+        // }).on('routesfound', function (e) {
+        // 			var routes = e.routes;
+        // 			console.log(routes);
+
+        // 			e.routes[0].coordinates.forEach(function (coord, index) {
+        // 				setTimeout(function () {
+        // 					newMarker.setLatLng([coord.lat, coord.lng]);
+        // 				}, 100 * index)
+        // 			})
+
+        // 		}).addTo(map);
+
+        routingControl = L.Routing.control({
+          waypoints: [
+            L.latLng(my_lat, my_lng),
+            L.latLng(dest_latitude, dest_longitude),
+          ],
+          showInstructions: false,
+        }).addTo(map);
+      }
+
+      function error(err) {
+        if (err.code === 1) {
+          alert("Please Allow Location Permission!");
+        } else {
+          alert("Cannot Get Current Location!");
+        }
+      }
+
+      var requestOptions = {
+        method: "GET",
+      };
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.5.0/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.5.0/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

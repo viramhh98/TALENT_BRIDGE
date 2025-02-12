@@ -1,0 +1,28 @@
+/* JobListings.css */
+
+.job-listings-container {
+  margin: 20px 0;
+}
+
+.job-listing {
+  border: 1px solid #ddd; /* Border for job listings */
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  background-color: #fff; /* White background for job listings */
+  transition: box-shadow 0.3s; /* Transition effect for hover */
+}
+
+.job-listing:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Shadow on hover */
+}
+
+.job-title {
+  font-size: 1.5rem;
+  color: #007bff;
+}
+
+.job-description {
+  margin-top: 5px;
+  color: #666;
+}
