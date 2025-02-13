@@ -100,13 +100,8 @@ Ensure you have the following installed:
 
 Contributions are welcome! Feel free to fork the repository and submit a pull request.
 
-## License
-
-This project is licensed under the MIT License.
-
 ## Contact
 
 For any queries, reach out at:
-- Email: [your-email@example.com](mailto:your-email@example.com)
 - Personal Email: [shahviramhh98@gmail.com](mailto:shahviramhh98@gmail.com)
 - Phone: 8799565899
