@@ -1,0 +1,22 @@
+/* Footer.css */
+
+.site-footer {
+  background-color: #343a40; /* Same dark background for consistency */
+  color: #fff;
+  padding: 2rem 0;
+  text-align: center;
+}
+
+.footer-social a {
+  color: #fff;
+  margin: 0 10px;
+  transition: color 0.3s;
+}
+
+.footer-social a:hover {
+  color: #007bff; /* Change color on hover */
+}
+
+.copyright {
+  margin-top: 20px;
+}
